@@ -1,7 +1,8 @@
--- 1
+import Data.Char (ord, chr)  
 
-perimetro :: Double -> Double
-perimetro r = pi * r
+-- 1
+perimetro1 :: Double -> Double
+perimetro1 r = pi * r
 
 dist :: (Double, Double) -> (Double, Double) -> Double
 dist (a, b) (c, d) = sqrt ((a-c)^2 +(b-d)^2)
@@ -179,5 +180,89 @@ data Figura = Circulo Ponto Double
     | Rectangulo Ponto Ponto
     | Triangulo Ponto Ponto Ponto
     deriving (Show, Eq)
+
+--7a
+poligono :: Figura -> Bool
+poligono (Rectangulo p1 p2) = True
+poligono (Triangulo p1 p2 p3) = True
+poligono x = False
+
+--7b
+vertices :: Figura -> [Ponto]
+vertices (Rectangulo (Cartesiano x1 y1) (Cartesiano x2 y2)) = 
+    [(Cartesiano x1 0), (Cartesiano x2 0), (Cartesiano x1 y1), (Cartesiano x2 y2)]
+vertices (Triangulo p1 p2 p3) = [p1, p2, p3]
+vertices _ = []
+
+--7c
+area :: Figura -> Double
+area (Triangulo p1 p2 p3) =
+    let a = distP p1 p2
+        b = distP p2 p3
+        c = distP p3 p1
+        s = (a+b+c) / 2 -- semi-perimetro
+    in sqrt (s*(s-a)*(s-b)*(s-c)) --formula de Heron
+area (Circulo p r) = pi * r^2
+area (Rectangulo (Cartesiano x1 y1) (Cartesiano x2 y2)) = 
+    let altura = dist (x1, 0) (x1, y1)
+        base = dist (x1, 0) (y1, 0)
+    in base * altura
+area (Rectangulo (Cartesiano x1 y1) (Polar r a)) =
+    let p2 = polarToCart (Polar r a)
+    in area (Rectangulo (Cartesiano x1 y1) p2)
+area (Rectangulo (Polar r a) (Cartesiano x1 y1)) = 
+    let p1 = polarToCart (Polar r a)
+    in area (Rectangulo p1 (Cartesiano x1 y1))
+area (Rectangulo (Polar r1 a1) (Polar r2 a2)) = 
+    let p1 = polarToCart (Polar r1 a1)
+        p2 = polarToCart (Polar r2 a2)
+    in area (Rectangulo p1 p2)
+
+--7d
+perimetro :: Figura -> Double
+perimetro (Circulo p r) = 2 * pi * r
+perimetro (Triangulo p1 p2 p3) =
+    let s1 = distP p1 p2
+        s2 = distP p2 p3
+        s3 = distP p3 p1
+    in s1 + s2 + s3
+perimetro (Rectangulo (Cartesiano x1 y1) (Cartesiano x2 y2)) = 
+    let altura = dist (x1, 0) (x1, y1)
+        base = dist (x1, 0) (y1, 0)
+    in altura * 2 + base * 2
+perimetro (Rectangulo (Cartesiano x1 y1) (Polar r a)) =
+    let p2 = polarToCart (Polar r a)
+    in perimetro (Rectangulo (Cartesiano x1 y1) p2)
+perimetro (Rectangulo (Polar r a) (Cartesiano x1 y1)) = 
+    let p1 = polarToCart (Polar r a)
+    in perimetro (Rectangulo p1 (Cartesiano x1 y1))
+perimetro (Rectangulo (Polar r1 a1) (Polar r2 a2)) = 
+    let p1 = polarToCart (Polar r1 a1)
+        p2 = polarToCart (Polar r2 a2)
+    in perimetro (Rectangulo p1 p2)
+
+--8a
+isLower :: Char -> Bool
+isLower c = ord c >= 97 && ord c <= 122
+
+--8b
+isDigit :: Char -> Bool
+isDigit c = ord c >= 48 && ord c <= 57
+
+--8c
+isAlpha :: Char -> Bool
+isAlpha c = isLower c || (ord c >= 65 && ord c <= 90)
+
+--8d
+toUpper :: Char -> Char
+toUpper c = chr (ord c - 32)
+
+--8e
+intToDigit :: Int -> Char
+intToDigit n = chr (n + 48)
+
+--8f
+digitToInt :: Char -> Int
+digitToInt c = ord c - 48
 
 
