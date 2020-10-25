@@ -159,10 +159,13 @@ p0 :: Polinomio
 p0 = [(1,2),(3,4)]
 
 p1 :: Polinomio
-p1 = [(2,1),(3,2),(1,3)]
+p1 = [(2,4),(1,2),(1,4)]
 
 p2 :: Polinomio
-p2 = [(1,2),(3,4),(3,1),(4,2),(1,5),(3,3)]
+p2 = [(2,1),(3,2),(1,3)]
+
+p3 :: Polinomio
+p3 = [(1,2),(3,4),(3,1),(4,2),(1,5),(3,3)]
 
 --4a
 conta :: Int -> Polinomio -> Int
@@ -244,8 +247,8 @@ organize [] = []
 organize [x] = [x]
 organize (x:xs)
     | snd x <= snd y = x : organize xs
-    | otherwise = y : organize (x:t) -- 'x' changes places with 'y' 
-    where (y:t) = organize xs
+    | otherwise = y : organize (x:ys) -- 'x' changes places with 'y' 
+    where (y:ys) = organize xs
 
 join :: Polinomio -> Polinomio
 join [] = []
@@ -258,6 +261,46 @@ normaliza :: Polinomio -> Polinomio
 normaliza p = join (organize p)
 
 --4i
---soma :: Polinomio -> Polinomio -> Polinomio
---soma [] [] = []
+soma :: Polinomio -> Polinomio -> Polinomio
+soma [] [] = []
+soma p [] = p
+soma [] p = p
+soma p1 p2 = normaliza (p1 ++ p2) 
+--ou
+soma2:: Polinomio -> Polinomio -> Polinomio
+soma2 p p1 = soma3 (normaliza p) (normaliza p1)
 
+soma3 :: Polinomio -> Polinomio -> Polinomio
+soma3 [(a,b)] [(x,y)]       = [(a+x,y)]
+soma3 ((a,b):xs) ((x,y):ys) = (a+x,y) : (soma3 xs ys)  
+soma3 a []                   = a
+soma3 [] a                   = a  
+
+
+--4j
+produto :: Polinomio -> Polinomio -> Polinomio
+produto [] p = []
+produto p [] = []
+produto (x:xs) y = (mult x y) ++ (produto xs y)
+
+--4k
+-- The organize funtion?
+ordena :: Polinomio -> Polinomio
+ordena [] = []
+ordena [x] = [x]
+ordena (x:xs)
+    | snd x <= snd y = x : ordena xs
+    | otherwise = y : ordena (x:ys) -- 'x' changes places with 'y' 
+    where (y:ys) = ordena xs
+
+--4l
+equiv :: Polinomio -> Polinomio -> Bool
+equiv [] [] = True
+equiv [] p = False
+equiv p [] = False
+equiv p1 p2
+    | (fst x == fst y) && (snd x == snd y) = equiv xs ys
+    | otherwise = False
+    where 
+        (x:xs) = normaliza p1
+        (y:ys) = normaliza p2
