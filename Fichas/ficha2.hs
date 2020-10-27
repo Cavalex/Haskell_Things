@@ -59,6 +59,9 @@ dobros4 x = map (d) x
 dobros5 :: [Float] -> [Float]
 dobros5 [] = []
 dobros5 (x:xs) = (2*x) : (dobros5 xs)
+--list comprehension
+dobros6 :: [Float] -> [Float]
+dobros6 l = [x*2 | x <- l]
 
 
 --2b
@@ -67,6 +70,10 @@ numOcorre c [] = 0
 numOcorre c (x:xs)
     | c == x = 1 + (numOcorre c xs)
     | otherwise = (numOcorre c xs)
+--list comprehension
+numOcorre2 :: Char -> String -> Int
+numOcorre2 c s = length [x | x <- s, x == c]
+
 
 --2c
 positivos :: [Int] -> Bool
@@ -82,6 +89,9 @@ soPos (x:xs)
 --ou
 soPos2 :: [Int] -> [Int]
 soPos2 l = filter (>0) l
+--list comprehension
+soPos3 :: [Int] -> [Int]
+soPos3 l = [x | x <- l, x >= 0]
 
 
 --2e
@@ -90,6 +100,10 @@ somaNeg [] = 0
 somaNeg (x:xs)
     | x < 0 = x + somaNeg xs
     | otherwise = 0 + somaNeg xs
+--list comprehension
+somaNeg2 :: [Int] -> Int
+somaNeg2 l = sum [x | x <- l, x < 0]
+
 
 --2f
 tresUlt :: [a] -> [a]
