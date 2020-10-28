@@ -55,7 +55,7 @@ convertePeca n | n == 3 = Comida Grande
 -- | Converts a Corredor to a string
 --
 printCorridor :: Corredor -> String
-printCorridor [] = "\n"
+printCorridor [] = []
 printCorridor (x:xs) = show x ++ printCorridor xs -- show returns a string so we can't prepend it ????
 
 
@@ -63,7 +63,7 @@ printCorridor (x:xs) = show x ++ printCorridor xs -- show returns a string so we
 --
 printMaze :: Labirinto -> String
 printMaze [] = []
-printMaze (x:xs) = printCorridor x ++ printMaze xs
+printMaze (x:xs) = printCorridor x ++ "\n" ++ printMaze xs
 
 
 -- | Converts a list of integers into a Corredor
