@@ -55,13 +55,15 @@ convertePeca n | n == 3 = Comida Grande
 -- | Converts a Corredor to a string
 --
 printCorridor :: Corredor -> String
-printCorridor = undefined
+printCorridor [] = "\n"
+printCorridor (x:xs) = show x ++ printCorridor xs -- show returns a string so we can't prepend it ????
 
 
 -- | Converts a Labirinto to a string
 --
 printMaze :: Labirinto -> String
-printMaze = undefined
+printMaze [] = []
+printMaze (x:xs) = printCorridor x ++ printMaze xs
 
 
 -- | Converts a list of integers into a Corredor
@@ -75,7 +77,7 @@ converteCorredor (h : t) = (convertePeca h) : (converteCorredor t)
 --
 converteLabirinto :: [[Int]] -> Labirinto
 converteLabirinto [] = []
-converteLabirinto (x : xs) = converteCorredor x : converteCorredor xs
+converteLabirinto (x : xs) = converteCorredor x : converteLabirinto xs
 
 
 geraLabirinto :: Int -> Int -> Int -> IO ()
