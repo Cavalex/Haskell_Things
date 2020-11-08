@@ -160,7 +160,11 @@ isSubsequenceOf2 (x:xs) (y:ys)
 elemIndices2 :: Eq a => a -> [a] -> [Int]
 elemIndices2 _ [] = []
 elemIndices2 n l = [x | x <- [0..(length l - 1)], l !! x == n]
-
+--ou
+-- simpler
+elemIndices3 :: Eq a => a -> [a] -> [Int]
+elemIndices3 _ [] = []
+elemIndices3 n l = [i | (y,i) <- zip l [0..], y==n]
 
 
 

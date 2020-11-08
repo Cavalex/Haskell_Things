@@ -227,6 +227,9 @@ cs2 = [Casa 333, Trab 444, Tlm 966, Email "abc"]
 cs3 :: [Contacto]
 cs3 = [Casa 333, Trab 444, Tlm 966]
 
+cs4 :: [Contacto]
+cs4 = [Casa 333, Trab 444, Tlm 966, Tlm 253]
+
 agenda1 :: Agenda
 agenda1 = [("Mateus", cs1), ("NomeTeste", cs2), ("NomeTeste2", cs2)]
 
@@ -249,6 +252,136 @@ verEmails n ((x,y):xs)
     where
         getEmails [] = []
         getEmails ((Email s):cs) = s : getEmails cs
-        getEmails (c:cs) = getEmails cs
+        getEmails (_:cs) = getEmails cs
 
+--c 
+consTelefs :: [Contacto] -> [Integer]
+consTelefs [] = []
+consTelefs ((Email x):xs) = consTelefs xs
+consTelefs ((Casa x):xs) = x:consTelefs xs
+consTelefs ((Tlm x):xs) = x:consTelefs xs
+consTelefs ((Trab x):xs) = x:consTelefs xs
+
+--d
+casa :: Nome -> Agenda -> Maybe Integer
+casa n [] = Nothing
+casa n ((x,y):xs)
+    | n == x = getCasa y
+    | otherwise = casa n xs
+    where
+        getCasa [] = Nothing
+        getCasa ((Casa x):xs) = Just x
+        getCasa (_:xs) = getCasa xs
+
+--4
+type Dia = Int
+type Mes = Int
+type Ano = Int
+--type Nome = String -- It's already defined above
+
+data Data = D Dia Mes Ano
+    deriving (Show,Eq)
+
+type TabDN = [(Nome, Data)]
+
+t1 :: TabDN
+t1 = [("Mateus", D 12 10 2001), ("Mateus2", D 12 10 1990)]
+
+--a
+procura :: Nome -> TabDN -> Maybe Data
+procura n [] = Nothing
+procura n ((x,y):xs)
+    | n == x = Just y
+    | otherwise = procura n xs
+
+--b
+idade :: Data -> Nome -> TabDN -> Maybe Int
+idade (D x1 y1 z1) n ((x,y):xs)
+    | n /= x = Nothing
+    | otherwise = 
+        let (D x2 y2 z2) = y
+        in if (y1==y2 && x1>=x2)||(y1>y2) then Just (z2-z1) else Just (z2-z1+1)
+-- we could use the procura funtion but the exercise said not to use Eq in the Data type
+
+--c
+anterior :: Data -> Data -> Bool
+anterior (D x1 y1 z1) (D x2 y2 z2)
+    | (x1>=x2 && y1==y2 && z1==z2) = False
+    | (y1>=y2 && z1==z2) = False
+    | (z1>z2) = False
+    | otherwise = True
+
+--d 
+ordena :: TabDN -> TabDN
+ordena [] = []
+ordena [x] = [x]
+ordena ((n1,x):xs)
+    | (anterior x y) == True = (n1,x) : ordena ((n2,y):xs)
+    | otherwise = (n2,y) : ordena ((n1,x):ys)
+    where
+        ((n2,y):ys) = ordena xs 
+
+--e
+-- weird error on the lambda funtion
+porIdade :: Data -> TabDN -> [(Nome, Int)]
+porIdade d1 t =
+    let
+        ordTab = ordena t
+        ordTabIdade = map (\(n,d2) -> (n,idade d1 n t)) ordTab
+        tabi = map (\(n, Just d) -> (n,d)) ordTabIdade
+    in 
+        tabi
+
+--5
+data Movimento = Credito Float | Debito Float
+    deriving Show
+
+data Data2 = D2 Int Int Int
+    deriving Show
+
+data Extracto = Ext Float [(Data, String, Movimento)]
+    deriving Show
+
+e1 :: Extracto
+e1 = Ext 200 [((D 10 1 2020),"ab",Debito 10 ),((D 11 1 2020),"ab",Credito 9 ),((D 12 1 2020),"abc",Credito 10),((D 13 2 2019),"qwe",Debito 12)] 
+
+--a
+vMov :: Movimento -> Float
+vMov (Credito x) = x
+vMov (Debito x) = x
+
+extValor :: Extracto -> Float -> [Movimento]
+extValor (Ext n []) _ = []
+extValor (Ext n ((d,s,m):xs)) f
+    | vMov m > f = m : extValor (Ext n xs) f
+    | otherwise = extValor (Ext n xs) f
+
+--b
+filtro :: Extracto -> [String] -> [(Data, Movimento)]
+filtro (Ext n []) sl = []
+filtro (Ext n ((d,s,m):xs)) sl
+    | (s `elem` sl) == True = (d,m) : filtro (Ext n xs) sl 
+    | otherwise = filtro (Ext n xs) sl
+
+--c
+sumDebit :: Extracto -> Float
+sumDebit (Ext n []) = 0
+sumDebit (Ext n ((d,s,(Debito x)):xs)) = x + sumDebit (Ext n xs)
+sumDebit (Ext n ((d,s,(Credito x)):xs)) = 0 + sumDebit (Ext n xs)
+
+sumCredit :: Extracto -> Float
+sumCredit (Ext n []) = 0
+sumCredit (Ext n ((d,s,(Debito x)):xs)) = 0 + sumCredit (Ext n xs)
+sumCredit (Ext n ((d,s,(Credito x)):xs)) = x + sumCredit (Ext n xs)
+
+creDeb :: Extracto -> (Float, Float)
+creDeb (Ext n []) = (0,0)
+creDeb e = (sumCredit e, sumDebit e)
+
+--d
+saldo :: Extracto -> Float
+saldo (Ext e l) = saldofinal
+    where 
+        (credit, debit) = creDeb (Ext e l)
+        saldofinal = credit + e - debit
 
