@@ -160,17 +160,103 @@ isSubsequenceOf2 (x:xs) (y:ys)
 elemIndices2 :: Eq a => a -> [a] -> [Int]
 elemIndices2 _ [] = []
 elemIndices2 n l = [x | x <- [0..(length l - 1)], l !! x == n]
---ou
--- simpler
+
+-- simpler?
 elemIndices3 :: Eq a => a -> [a] -> [Int]
 elemIndices3 _ [] = []
 elemIndices3 n l = [i | (y,i) <- zip l [0..], y==n]
 
+--20
+nub2 :: Eq a => [a] -> [a]
+nub2 [] = []
+nub2 (x:xs) = x : nub2 (retiraElementos xs x)
+    where
+        retiraElementos [] _ = []
+        retiraElementos (y:ys) n
+            | y == n = (retiraElementos ys n)
+            | otherwise = y : (retiraElementos ys n)
 
+--simpler
+nub3 :: Eq a => [a] -> [a]
+nub3 [] = []
+nub3 (x:xs) = if x `elem` xs then nub3 xs else x : nub3 xs
 
+--even simpler
+nub4 :: Eq a => [a] -> [a]
+nub4 [] = []
+nub4 (x:xs) = x : nub4 (filter (/=x) xs)
+--nub4 (x:xs) = x : filter (/=x) (nub4 xs)
+--both are right
 
+--21
+delete2 :: Eq a => a -> [a] -> [a]
+delete2 _ [] = []
+delete2 n (x:xs)
+    | x == n = xs
+    | otherwise = x : (delete2 n xs)
 
+--22
+remove2 :: Eq a => [a] -> [a] -> [a]
+remove2 l [] = l
+remove2 [] _ = []
+remove2 l (y:ys) = remove2 (delete2 y l) ys
 
+--23
+union2 :: Eq a => [a] -> [a] -> [a]
+union2 l [] = l
+union2 l (x:xs)
+    | x `elem` l = union2 l xs
+    | otherwise = union2 (l ++ [x]) xs
+
+--24
+intersect2 :: Eq a => [a] -> [a] -> [a]
+intersect2 [] _ = []
+intersect2 (x:xs) l
+    | x `elem` l = x : intersect2 xs l
+    | otherwise = intersect2 xs l
+
+--25
+insert2 :: Ord a => a -> [a] -> [a]
+insert2 _ [] = []
+insert2 n (x:xs)
+    | n >= x = x : (insert2 n xs)
+    | otherwise = n : (x:xs)
+
+--26
+unwords2 ::  [String] -> String
+unwords2 [x] = x
+unwords2 (x:xs) = x ++ (if null x then "" else " ") ++ (unwords2 xs)
+--unwords2 (x:xs) = x ++ " " ++ (unwords2 xs)
+
+--27
+unlines2 ::  [String] -> String
+unlines2 [] = "\n"
+unlines2 (x:xs) = x ++ "\n" ++ unlines2 xs
+
+--28
+pMaior ::  Ord a => [a] -> Int
+pMaior (h:t) = aux 0 0 h t
+    where
+        aux _ inMaior _ [] = inMaior
+        aux inAtual inMaior maior (x:xs)
+            | x > maior = aux (inAtual + 1) (inAtual + 1) x xs
+            | otherwise = aux (inAtual + 1) (inMaior) maior xs
+
+--29
+temRepetidos :: Eq a => [a] -> Bool
+temRepetidos [] = False
+temRepetidos (x:xs) = x `elem` xs || temRepetidos xs 
+
+--30
+algarismos :: [Char] -> [Char]
+algarismos [] = []
+algarismos (x:xs)
+    | x `elem` ['0'..'9'] = x : algarismos xs
+    | otherwise = algarismos xs
+
+--simpler
+algarismos2 :: [Char] -> [Char]
+algarismos2 = filter (`elem` ['0'..'9'])
 
 
 
