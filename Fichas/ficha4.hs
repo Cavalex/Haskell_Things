@@ -70,4 +70,11 @@ fromDigits2 (x:xs) = aux xs x
 --7
 -- ??? nao funciona
 --maxSumInit :: (Num a, Ord a) => [a] -> a
---maxSumInit l = maximum [sum m | m <- init l]
+--maxSumInit l = maximum [ m | m <- init l]
+
+--8
+fib :: Int -> Int
+fib 0 = 0
+fib 1 = 1
+fib n = fib (n-1) + fib (n-2)
+

@@ -258,5 +258,35 @@ algarismos (x:xs)
 algarismos2 :: [Char] -> [Char]
 algarismos2 = filter (`elem` ['0'..'9'])
 
+--31
+posImpares :: [a] -> [a]
+posImpares l = aux l 0
+    where
+        aux [] _ = [] 
+        aux (x:xs) n
+            | n `mod` 2 == 0 = aux xs (n+1)
+            | otherwise = x:(aux xs (n+1))
 
+--32
+posPares :: [a] -> [a]
+posPares l = aux l 0
+    where
+        aux [] _ = [] 
+        aux (x:xs) n
+            | n `mod` 2 /= 0 = aux xs (n+1)
+            | otherwise = x:(aux xs (n+1))
+
+--33
+isSorted :: Ord a => [a] -> Bool
+isSorted [] = True
+isSorted [x] = True
+isSorted (x:y:xs) = (if x <= y then True else False) && isSorted (y:xs)
+
+--34
+-- nao funciona
+--iSort :: Ord a => [a] -> [a]
+--iSort [] = []
+--iSort (h:t) = insert2 h (iSort t)
+
+--35
 
