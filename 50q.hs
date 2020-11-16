@@ -235,12 +235,17 @@ unlines2 (x:xs) = x ++ "\n" ++ unlines2 xs
 
 --28
 pMaior ::  Ord a => [a] -> Int
+pMaior [] = error "Empty list!"
 pMaior (h:t) = aux 0 0 h t
     where
         aux _ inMaior _ [] = inMaior
         aux inAtual inMaior maior (x:xs)
             | x > maior = aux (inAtual + 1) (inAtual + 1) x xs
             | otherwise = aux (inAtual + 1) (inMaior) maior xs
+
+pMaiorNonRecursive :: Ord a => [a] -> Int
+pMaiorNonRecursive [] = error "Empty list!"
+pMaiorNonRecursive l = snd (maximum (zip l [0..]))
 
 --29
 temRepetidos :: Eq a => [a] -> Bool
@@ -286,7 +291,151 @@ isSorted (x:y:xs) = (if x <= y then True else False) && isSorted (y:xs)
 -- nao funciona
 --iSort :: Ord a => [a] -> [a]
 --iSort [] = []
+--iSort [x] = [x]
 --iSort (h:t) = insert2 h (iSort t)
 
 --35
+menor :: String -> String -> Bool
+menor [] _ = True
+menor _ [] = True
+menor (x:xs) (y:ys)
+    | sizeS listaLetras x 0  < sizeS listaLetras y 0  = True
+    | sizeS listaLetras x 0 == sizeS listaLetras y 0  = True && menor xs ys
+    | otherwise = False
+    where
+        listaLetras = ['a'..'z']
+        sizeS (z:zs) l ac = if l == z then ac else sizeS (zs) l (ac+1)
+
+--36
+elemMSet :: Eq a => a -> [(a,Int)] -> Bool
+elemMSet n [] = False
+elemMSet n ((x,y):xs) = if n == x then True else False || (elemMSet n (xs)) 
+
+--37
+lengthMSet :: [(a,Int)] -> Int
+lengthMSet [] = 0
+lengthMSet ((x,y):xs) = y + lengthMSet xs
+
+--38
+converteMSet :: [(a,Int)] -> [a]
+converteMSet [] = []
+converteMSet ((x,y):xs) = (aux (x,y))++(converteMSet xs)
+    where
+        aux (c,0) = []
+        aux (c,n) = c : aux (c,n-1)
+
+--39
+insereMSet :: Eq a => a -> [(a,Int)] -> [(a,Int)]
+insereMSet c [] = [(c,1)]
+insereMSet c ((x,y):xs) = if c == x then ((x,y+1):xs) else (x,y):(insereMSet c xs)
+
+--40
+removeMSet :: Eq a => a -> [(a,Int)] -> [(a,Int)]
+removeMSet c [] = error "Nada para remover!"
+removeMSet c ((x,y):xs) = if c == x then (if y-1 <= 0 then xs else ((x,y-1):xs)) else (x,y):(removeMSet c xs)
+
+--41
+constroiMSet :: Ord a => [a] -> [(a,Int)]
+constroiMSet (c:cs) = (aux cs c 1) -- : (aux2 s)
+    where
+        aux [] l ac = [(l,ac)]
+        aux (x:xs) l ac = if x == l then aux xs l (ac+1) else (l,ac) : (aux2 (x:xs))
+
+        aux2 [] = []
+        aux2 (x:xs) = aux xs x 1 
+
+--42
+partitionEithers :: [Either a b] -> ([a],[b])
+partitionEithers [] = ([],[])
+partitionEithers ((Left a):xs) = (a:nx, ny)
+    where (nx,ny) = partitionEithers xs
+partitionEithers ((Right a):xs) = (nx,a:ny)
+    where (nx,ny) = partitionEithers xs
+
+--43
+-- I could also do basic pattern matching
+catMaybes :: [Maybe a] -> [a]
+catMaybes [] = []
+catMaybes (x:xs) = 
+    case x of Nothing -> catMaybes xs
+              Just x -> x:catMaybes xs
+
+--44
+data Movimento = Norte | Sul | Este | Oeste
+    deriving Show
+
+posicao :: (Int,Int) -> [Movimento] -> (Int,Int)
+posicao (x,y) [] = (x,y)
+posicao (x,y) (m:ms) = 
+    case m of Norte -> posicao (x,y+1) ms
+              Sul -> posicao (x,y-1) ms
+              Este -> posicao (x+1,y) ms
+              Oeste -> posicao (x-1,y) ms
+
+--45
+caminho :: (Int, Int) -> (Int, Int) -> [Movimento]
+caminho (x,y) (x2,y2) = (countH (x2-x)) ++ (countV (y2-y))
+    where
+        countH 0 = []
+        countH n
+            | n < 0 = Oeste : countH (n+1)
+            | n > 0 = Este : countH (n-1)
+        countV 0 = []
+        countV n
+            | n < 0 = Sul : countV (n+1)
+            | n > 0 = Norte : countV (n-1)
+
+--46
+vertical :: [Movimento] -> Bool
+vertical [] = True
+vertical (x:xs) = 
+    case x of Norte -> True && vertical xs
+              Sul -> True && vertical xs
+              x -> False -- yup, funciona
+
+--47
+data Posicao = Pos Int Int
+    deriving Show
+
+dist :: Posicao -> Posicao -> Double
+dist (Pos x1 y1) (Pos x2 y2) = sqrt ((x22-x12)^2 + (y22-y12)^2)
+    where
+        x22 = fromIntegral x2
+        x12 = fromIntegral x1
+        y22 = fromIntegral y2
+        y12 = fromIntegral y1
+
+maisCentral :: [Posicao] -> Posicao
+maisCentral (x:xs) = aux xs (dist x (Pos 0 0)) x
+    where
+        aux [] d pm = pm
+        aux (p:ps) d pm = if dist p (Pos 0 0) < d then (aux ps (dist p (Pos 0 0)) p) else (aux ps d pm)
+
+--48
+vizinhos :: Posicao -> [Posicao] -> [Posicao]
+vizinhos _ [] = []
+vizinhos (Pos x1 y1) ((Pos x2 y2):xs)
+    | abs (x1-x2) <= 1 && abs (y1-y2) <= 1 = (Pos x2 y2) : vizinhos (Pos x1 y1) xs
+    | otherwise = vizinhos (Pos x1 y1) xs
+
+--49
+mesmaOrdenada :: [Posicao] -> Bool
+mesmaOrdenada [] = True
+mesmaOrdenada [p] = True
+mesmaOrdenada ((Pos x1 y1):(Pos x2 y2):xs)
+    | y1 == y2 = True && mesmaOrdenada ((Pos x2 y2):xs)
+    | otherwise = False && mesmaOrdenada ((Pos x2 y2):xs)
+
+--50
+data Semaforo = Verde | Amarelo | Vermelho
+    deriving Show
+
+interseccaoOK ::  [Semaforo] -> Bool
+interseccaoOK [] = True
+interseccaoOK s = if (aux s 0) <= 1 then True else False
+    where
+        aux [] ac = ac
+        aux (x:xs) ac = 
+            case x of Vermelho -> aux xs (ac+1)
+                      n -> aux xs (ac)
 
