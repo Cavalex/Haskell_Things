@@ -6,9 +6,9 @@ enumFromTo2 a b
 
 --2
 enumFromThenTo2 :: Int -> Int -> Int -> [Int]
-enumFromThenTo2 a b c
-    | a + b > c = []
-    | otherwise = a : enumFromThenTo2 (a+b) b c
+enumFromThenTo2 start next end
+    | start > end && next - start > 0 || start < end && next - start < 0 = []
+    | otherwise = start:enumFromThenTo2 next (next + next-start) end
 
 --3
 concat2 :: [a] -> [a] -> [a]
