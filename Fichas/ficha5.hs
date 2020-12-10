@@ -62,6 +62,8 @@ conta :: Int ->
 conta n p = foldr (\(x,e) ac -> if e == n then ac +1 else ac ) 0 p
 
 --c
+grau :: Polinomio -> Int
+grau = undefined
 
 
 
@@ -113,12 +115,28 @@ addMat = zipWith (zipWith (+))
 
 --d
 transposeM :: Mat a -> Mat a
-transposeM = map (reverse)
+transposeM [] = []
+transposeM ([]:_) = []
+transposeM m = (map head m):transposeM (map tail m)
+
+transposeM2 :: Mat a -> Mat a
+transposeM2 [] = []
+transposeM2 [l] = map (:[]) l
+--transposeM2 [l] = [[x] | x <- l]
+transposeM2 (l:ls) = zipWith (:) l ls'
+    where 
+        ls' = transposeM2 ls
 
 --e
 multMat :: Num a => Mat a -> Mat a -> Mat a
-multMat = undefined
+multMat ma mb = [[sum (zipWith (*) l1 l2) | l2 <- (transposeM mb)] | l1 <- ma]
 
 --f
 zipWMat :: (a -> b -> c) ->  Mat a -> Mat b -> Mat c
 zipWMat = undefined
+
+--g
+
+
+
+
