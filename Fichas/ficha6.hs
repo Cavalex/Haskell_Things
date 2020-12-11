@@ -76,3 +76,72 @@ unzipBT (Node (x,y,z) l r) = ((Node x xl xr),(Node y yl yr),(Node z zl zr))
         (xl,yl,zl) = unzipBT l
         (xr,yr,zr) = unzipBT r
 
+--2
+
+--3
+type Aluno = (Numero,Nome,Regime,Classificacao)
+type Numero = Int
+type Nome = String 
+data Regime = ORD | TE | MEL  deriving Show 
+data Classificacao = Aprov Int
+                    | Rep
+                    | Faltou
+      deriving Show
+type Turma = BTree Aluno  -- arvore binaria de procura (ordenada por numero)
+
+al1,al2,al3,al4 :: Aluno
+al1 = (1234, "Xico", TE, Aprov 12)
+al2 = (2345, "Manuel", ORD, Aprov 16)
+al3 = (3456, "Ana", MEL, Faltou)
+al4 = (4567, "Carlos", TE, Aprov 20)
+ 
+t1 :: Turma
+t1 = Node al2 (Node al1 Empty Empty) (Node al3 Empty Empty)
+
+--a
+inscNum :: Numero -> Turma -> Bool
+inscNum n Empty = False 
+inscNum n (Node (nu,no,re,cl) e d)
+        | n == nu = True
+        | n < nu = (inscNum n e)
+        | n > nu = (inscNum n d)
+
+--b
+inscNome :: Nome -> Turma -> Bool
+inscNome n Empty = False
+inscNome n (Node (nu,no,re,cl) e d)
+         | n == no = True
+         | otherwise = (inscNome n e) || (inscNome n d)   
+
+
+acrescentaAluno :: Aluno -> Turma -> Turma 
+acrescentaAluno a Empty = Node a Empty Empty
+acrescentaAluno (nu1,no1,re1,cl1) (Node (nu,no,re,cl) e d) 
+                | nu1 == nu = (Node (nu,no,re,cl) e d)
+                | nu1 < nu = (Node (nu,no,re,cl) (acrescentaAluno (nu1,no1,re1,cl1) e) d)
+                | nu1 > nu = (Node (nu,no,re,cl) e (acrescentaAluno (nu1,no1,re1,cl1) d)) 
+
+
+minimo :: Turma -> Aluno 
+minimo (Node r Empty d) = r
+minimo (Node r e d) = minimo e
+
+sMin :: Turma -> Turma 
+sMin (Node r Empty d) = d 
+sMin (Node r e d) = Node r (sMin e) d
+
+minSmin :: BTree a -> (a,BTree a)
+minSmin (Node r Empty d) = (r,d)
+minSmin (Node r e d) = (x,Node r y d)
+    where (x,y) = minSmin e
+
+removeAluno :: Aluno -> Turma -> Turma 
+removeAluno _ Empty = Empty
+removeAluno al@(nuA,_,_,_) t@(Node r@(nuR,_,_,_) e d)
+      | nuA == nuR = removeRaiz t
+      | nuA < nuR = Node r (removeAluno al e) d
+      | nuA > nuR = Node r e (removeAluno al d)
+   where removeRaiz (Node x Empty d) = d
+         removeRaiz (Node x e Empty) = e
+         removeRaiz (Node r e d) = Node md e d' 
+            where (md,d') = minSmin d
