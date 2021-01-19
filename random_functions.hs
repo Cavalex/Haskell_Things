@@ -5,3 +5,6 @@ mySort (x:xs)
     | otherwise = y : mySort (x:ys)
     where 
         (y:ys) = mySort xs
+
+aN :: [Int] -> [(Int, Int)]
+aN l = zip l [0..]
