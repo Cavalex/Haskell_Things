@@ -36,6 +36,32 @@ fromList :: [a] -> BTree a
 fromList [] = Empty
 fromList (h:t) = Node h Empty (fromList t)
 
+type Mat a = [[a]]
+
+m1 :: Mat Int
+m1 = [[6,7,2], [1,5,9], [8,3,4]]
+
+magic :: Mat Int -> Bool
+magic mat = linhasIguaisA n mat && colunasIguaisA n mat && diagonaisIguaisA n mat
+    where n = sum (head mat)
+
+areEqual :: Int -> [Int] -> Bool
+areEqual _ [] = True
+areEqual n (x:xs) = if x == n then areEqual n xs else False
+
+linhasIguaisA :: Int -> Mat Int -> Bool
+linhasIguaisA n mat = areEqual n (map (sum) mat)
+
+colunasIguaisA :: Int -> Mat Int -> Bool
+colunasIguaisA n (x:xs) = if length x > 0 then colunasIguaisA n novaMatriz && (n == sum (map (head) (x:xs))) else True
+    where
+        novaMatriz = map (tail) (x:xs)
+
+diagonaisIguaisA :: Int -> Mat Int -> Bool
+diagonaisIguaisA n (x:xs) = if length x > 0 then diagonaisIguaisA n novaMatriz && (n == sum (map (head) (x:xs))) else True
+    where
+        novaMatriz = map (tail) (x:xs)
+
 
 --a
 altura :: BTree a -> Int
@@ -62,7 +88,10 @@ prune n (Node a left right)
 
 --e
 path :: [Bool] -> BTree a -> [a]
-path = undefined
+path [] _ = []
+path _ Empty = []
+path (False:xs) (Node a left right) = a:path xs left
+path (True:xs) (Node a left right) = a:path xs right
 
 --f
 
