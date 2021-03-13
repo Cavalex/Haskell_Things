@@ -6,5 +6,5 @@ Notes:
 3) If the game feels slow, lower the variable "profundidade" on Tarefa5.hs. 
 
 Made by:
-Mateus Pereira, Cavalex
-José Martins, ZeM4artins
+-Mateus Pereira, Cavalex
+-José Martins, ZeM4artins
